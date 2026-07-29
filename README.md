@@ -33,7 +33,7 @@ This project provides a server for accessing Stardog Cloud's Voicebox APIs, enab
 
 You can run the server locally using either Docker or Python/uv:
 
-- **Python**: `>=3.12`
+- **Python**: `>=3.12,<3.14`
 - **uv**: a python package and project manager ([uv](https://github.com/astral-sh/uv))
 - **npx**: only for running mcp-remote based MCP host-server connections see [Integrating Claude desktop with Remote MCP](#integrating-with-claude)
 - **Stardog Cloud API Token**: Required for authentication with Stardog Cloud APIs
@@ -99,7 +99,7 @@ Use the following sample json to make Claude Desktop to point to your local MCP 
 Use Cursor's MCP integration to connect to your local server by configuring the `mcp.json` file. 
 - Add this file to your project workspace at _./cursor/mcp.json_.
 - Go to Cursor settings, under MCP and Integration, find your configured server and verify the available tools. 
-- See [Cursor MCP documentation](https://docs.cursor.com/en/context/mcp#using-mcp-json) to find more details.
+- See [Cursor MCP documentation](https://cursor.com/docs/context/mcp) to find more details.
 ```json
 {
   "mcpServers": {
@@ -153,7 +153,7 @@ Add the following to your Cursor configuration:
   }
 }
 ```
-See [Cursor MCP documentation](https://docs.cursor.com/en/context/mcp#using-mcp-json) for more details.
+See [Cursor MCP documentation](https://cursor.com/docs/context/mcp) for more details.
 
 > [!TIP]
 > Set the `SDC_TIMEOUT` environment variable (in seconds) when starting the Docker container to configure the request timeout. Default is 300 seconds. Example: `docker run -e SDC_TIMEOUT=120 ...`

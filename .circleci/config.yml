@@ -12,7 +12,7 @@ references:
 executors:
   python-executor:
     docker:
-      - image: cimg/python:3.12
+      - image: cimg/python:3.13
     working_directory: *working_directory
 
   test-executor:
@@ -44,7 +44,7 @@ jobs:
             - ./
 
   build:
-    executor: test-executor
+    executor: python-executor
     steps:
       - attach_workspace:
           at: .
@@ -59,7 +59,7 @@ jobs:
             - ./
 
   test:
-    executor: test-executor
+    executor: python-executor
     steps:
       - attach_workspace:
           at: .
