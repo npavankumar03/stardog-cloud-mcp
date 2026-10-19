@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stardog-cloud-mcp
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /mcp
+        pathType: Prefix
+        backend:
+          service:
+            name: stardog-cloud-mcp
+            port:
+              number: 80
+  # Uncomment and set host + tls once you have a domain and cert-manager
+  # tls:
+  # - hosts:
+  #   - mcp.yourdomain.com
+  #   secretName: stardog-mcp-tls

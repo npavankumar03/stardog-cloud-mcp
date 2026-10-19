@@ -1,23 +1,26 @@
 # Kubernetes Manifests for Stardog Cloud MCP
 
-These manifests are used by the GitHub Actions workflow in `.github/workflows/deploy-aks.yml`.
+## Production practice notes (test AKS)
 
-## Required GitHub Secrets
+- Service is ClusterIP (not LoadBalancer).
+- Ingress expects the **nginx** Ingress controller.
 
-Add these secrets in your repository Settings → Secrets and variables → Actions:
+### Install nginx Ingress controller (one-time on the cluster)
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/cloud/deploy.yaml
+```
 
-- `AZURE_CREDENTIALS`: JSON output from:
-  ```bash
-  az ad sp create-for-rbac --name stardog-mcp-github --role contributor \
-    --scopes /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP> \
-    --sdk-auth
-  ```
-- `ACR_NAME`: Your Azure Container Registry name (e.g. `stardogmcpregistry`)
-- `AKS_RESOURCE_GROUP`: Resource group containing the AKS cluster
-- `AKS_CLUSTER_NAME`: Name of your AKS cluster
+### Get the Ingress external IP
+```bash
+kubectl get ingress stardog-cloud-mcp
+# or
+kubectl get svc -n ingress-nginx
+```
 
-## Notes
+### Enable real HTTPS later
+1. Install cert-manager
+2. Create a ClusterIssuer (Let's Encrypt)
+3. Uncomment the `tls` section in `ingress.yaml` and set your domain
+4. Point a DNS A record to the Ingress IP
 
-- The workflow builds the image with `az acr build` (no local Docker needed on the runner).
-- Image tag is the commit SHA; the `k8s-deploy` action updates the image in the manifests.
-- Auth tokens are **not** stored in the cluster; clients pass them via MCP request headers.
+The MCP endpoint will be available at `http://<INGRESS-IP>/mcp` (or `https://yourdomain/mcp` once TLS is configured).

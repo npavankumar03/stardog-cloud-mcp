@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: stardog-cloud-mcp
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: stardog-cloud-mcp
   ports:
