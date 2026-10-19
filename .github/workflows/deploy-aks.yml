@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 env:
-  ACR_NAME: ${{ secrets.ACR_NAME }}
+  ACR_NAME: testcontainerregistry1992
   IMAGE_NAME: stardog-cloud-mcp
-  RESOURCE_GROUP: ${{ secrets.AKS_RESOURCE_GROUP }}
-  CLUSTER_NAME: ${{ secrets.AKS_CLUSTER_NAME }}
+  RESOURCE_GROUP: test
+  CLUSTER_NAME: testing
 
 jobs:
   build-and-deploy:
@@ -27,12 +27,20 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+    - name: Debug context
+      run: |
+        echo "ACR_NAME=$ACR_NAME"
+        echo "RESOURCE_GROUP=$RESOURCE_GROUP"
+        echo "CLUSTER_NAME=$CLUSTER_NAME"
+        az account show --query name -o tsv
+
     - name: Build and push image to ACR
       run: |
+        set -euo pipefail
         az acr build \
-          --registry ${{ env.ACR_NAME }} \
-          --image ${{ env.IMAGE_NAME }}:${{ github.sha }} \
-          --image ${{ env.IMAGE_NAME }}:latest \
+          --registry "$ACR_NAME" \
+          --image "$IMAGE_NAME:${{ github.sha }}" \
+          --image "$IMAGE_NAME:latest" \
           .
 
     - name: Set AKS context
