@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: stardog-cloud-mcp
-        image: ACR_NAME.azurecr.io/stardog-cloud-mcp:latest  # replaced by CI
+        image: testcontainerregistry1992.azurecr.io/stardog-cloud-mcp:latest
         ports:
         - containerPort: 7000
         env:
