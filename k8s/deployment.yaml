@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stardog-cloud-mcp
+  labels:
+    app: stardog-cloud-mcp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: stardog-cloud-mcp
+  template:
+    metadata:
+      labels:
+        app: stardog-cloud-mcp
+    spec:
+      containers:
+      - name: stardog-cloud-mcp
+        image: ACR_NAME.azurecr.io/stardog-cloud-mcp:latest  # replaced by CI
+        ports:
+        - containerPort: 7000
+        env:
+        - name: SDC_ENDPOINT
+          value: "https://cloud.stardog.com/api"
+        - name: SDC_MCP_SERVER_MODE
+          value: "http"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          tcpSocket:
+            port: 7000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: 7000
+          initialDelaySeconds: 5
+          periodSeconds: 10
