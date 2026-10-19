@@ -10,6 +10,7 @@ env:
   IMAGE_NAME: stardog-cloud-mcp
   RESOURCE_GROUP: test
   CLUSTER_NAME: testing
+  ACR_LOGIN_SERVER: testcontainerregistry1992.azurecr.io
 
 jobs:
   build-and-deploy:
@@ -34,14 +35,16 @@ jobs:
         echo "CLUSTER_NAME=$CLUSTER_NAME"
         az account show --query name -o tsv
 
-    - name: Build and push image to ACR
+    - name: Login to ACR
+      run: az acr login --name "$ACR_NAME"
+
+    - name: Build and push image with Docker
       run: |
         set -euo pipefail
-        az acr build \
-          --registry "$ACR_NAME" \
-          --image "$IMAGE_NAME:${{ github.sha }}" \
-          --image "$IMAGE_NAME:latest" \
-          .
+        IMAGE="$ACR_LOGIN_SERVER/$IMAGE_NAME"
+        docker build -t "$IMAGE:${{ github.sha }}" -t "$IMAGE:latest" .
+        docker push "$IMAGE:${{ github.sha }}"
+        docker push "$IMAGE:latest"
 
     - name: Set AKS context
       uses: azure/aks-set-context@v4
@@ -57,5 +60,5 @@ jobs:
           k8s/deployment.yaml
           k8s/service.yaml
         images: |
-          ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         namespace: default
